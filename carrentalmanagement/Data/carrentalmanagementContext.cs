@@ -1,19 +1,13 @@
 ﻿using carrentalmanagement.Configurations.Entities;
-using carrentalmanagement.Domain;
+using carrentalmanagement.Data;
+using CarRentalManagement.Configurations.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace carrentalmanagement.Data
 {
-    public class carrentalmanagementContext : DbContext
+    public class carrentalmanagementContext(DbContextOptions<carrentalmanagementContext> options) : IdentityDbContext<carrentalmanagementUser>(options)
     {
-        public carrentalmanagementContext (DbContextOptions<carrentalmanagementContext> options)
-            : base(options)
-        {
-        }
 
         public DbSet<carrentalmanagement.Domain.Make> Make { get; set; } = default!;
         public DbSet<carrentalmanagement.Domain.Model> Model { get; set; } = default!;
@@ -29,6 +23,9 @@ namespace carrentalmanagement.Data
             builder.ApplyConfiguration(new ColourSeed());
             builder.ApplyConfiguration(new MakeSeed());
             builder.ApplyConfiguration(new ModelSeed());
+            builder.ApplyConfiguration(new RoleSeed());
+            builder.ApplyConfiguration(new UserSeed());
+            builder.ApplyConfiguration(new UserRoleSeed());
         }
     }
 }
