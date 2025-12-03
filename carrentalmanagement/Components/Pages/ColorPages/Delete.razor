@@ -1,0 +1,71 @@
+﻿@page "/colors/delete"
+@using Microsoft.EntityFrameworkCore
+@using carrentalmanagement.Domain
+@inject IDbContextFactory<carrentalmanagement.Data.carrentalmanagementContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete</PageTitle>
+
+<h1>Delete</h1>
+
+<p>Are you sure you want to delete this?</p>
+<div>
+    <h2>Color</h2>
+    <hr />
+    @if (color is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@color.Name</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">DateCreated</dt>
+            <dd class="col-sm-10">@color.DateCreated</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">DateUpdated</dt>
+            <dd class="col-sm-10">@color.DateUpdated</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">CreatedBy</dt>
+            <dd class="col-sm-10">@color.CreatedBy</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">UpdatedBy</dt>
+            <dd class="col-sm-10">@color.UpdatedBy</dd>
+        </dl>
+        <EditForm method="post" Model="color" OnValidSubmit="DeleteColor" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(color is null)">Delete</button> |
+            <a href="/colors">Back to List</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private Color? color;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        color = await context.Color.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (color is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteColor()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Color.Remove(color!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/colors");
+    }
+}

@@ -1,0 +1,64 @@
+﻿@page "/colors/create"
+@using Microsoft.EntityFrameworkCore
+@using carrentalmanagement.Domain
+@inject IDbContextFactory<carrentalmanagement.Data.carrentalmanagementContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Color</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Color" OnValidSubmit="AddColor" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label> 
+                <InputText id="name" @bind-Value="Color.Name" class="form-control" /> 
+                <ValidationMessage For="() => Color.Name" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="datecreated" class="form-label">DateCreated:</label> 
+                <InputDate id="datecreated" @bind-Value="Color.DateCreated" class="form-control" /> 
+                <ValidationMessage For="() => Color.DateCreated" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="dateupdated" class="form-label">DateUpdated:</label> 
+                <InputDate id="dateupdated" @bind-Value="Color.DateUpdated" class="form-control" /> 
+                <ValidationMessage For="() => Color.DateUpdated" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="createdby" class="form-label">CreatedBy:</label> 
+                <InputText id="createdby" @bind-Value="Color.CreatedBy" class="form-control" /> 
+                <ValidationMessage For="() => Color.CreatedBy" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="updatedby" class="form-label">UpdatedBy:</label> 
+                <InputText id="updatedby" @bind-Value="Color.UpdatedBy" class="form-control" /> 
+                <ValidationMessage For="() => Color.UpdatedBy" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/colors">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Color Color { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddColor()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Color.Add(Color);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/colors");
+    }
+}

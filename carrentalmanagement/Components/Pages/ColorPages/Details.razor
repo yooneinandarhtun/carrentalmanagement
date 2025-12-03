@@ -1,0 +1,54 @@
+﻿@page "/colors/details"
+@using Microsoft.EntityFrameworkCore
+@using carrentalmanagement.Domain
+@inject IDbContextFactory<carrentalmanagement.Data.carrentalmanagementContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Color</h2>
+    <hr />
+    @if (color is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@color.Name</dd>
+            <dt class="col-sm-2">DateCreated</dt>
+            <dd class="col-sm-10">@color.DateCreated</dd>
+            <dt class="col-sm-2">DateUpdated</dt>
+            <dd class="col-sm-10">@color.DateUpdated</dd>
+            <dt class="col-sm-2">CreatedBy</dt>
+            <dd class="col-sm-10">@color.CreatedBy</dd>
+            <dt class="col-sm-2">UpdatedBy</dt>
+            <dd class="col-sm-10">@color.UpdatedBy</dd>
+        </dl>
+        <div>
+            <a href="@($"/colors/edit?id={color.Id}")">Edit</a> |
+            <a href="@($"/colors")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Color? color;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        color = await context.Color.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (color is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

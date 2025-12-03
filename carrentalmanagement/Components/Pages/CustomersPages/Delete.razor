@@ -1,0 +1,83 @@
+﻿@page "/customers/delete"
+@using Microsoft.EntityFrameworkCore
+@using carrentalmanagement.Domain
+@inject IDbContextFactory<carrentalmanagement.Data.carrentalmanagementContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete</PageTitle>
+
+<h1>Delete</h1>
+
+<p>Are you sure you want to delete this?</p>
+<div>
+    <h2>Customers</h2>
+    <hr />
+    @if (customers is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">DrivingLicense</dt>
+            <dd class="col-sm-10">@customers.DrivingLicense</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Address</dt>
+            <dd class="col-sm-10">@customers.Address</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">ContactNumber</dt>
+            <dd class="col-sm-10">@customers.ContactNumber</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">EmailAddress</dt>
+            <dd class="col-sm-10">@customers.EmailAddress</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">DateCreated</dt>
+            <dd class="col-sm-10">@customers.DateCreated</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">DateUpdated</dt>
+            <dd class="col-sm-10">@customers.DateUpdated</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">CreatedBy</dt>
+            <dd class="col-sm-10">@customers.CreatedBy</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">UpdatedBy</dt>
+            <dd class="col-sm-10">@customers.UpdatedBy</dd>
+        </dl>
+        <EditForm method="post" Model="customers" OnValidSubmit="DeleteCustomers" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(customers is null)">Delete</button> |
+            <a href="/customers">Back to List</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private Customers? customers;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        customers = await context.Customers.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (customers is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteCustomers()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Customers.Remove(customers!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/customers");
+    }
+}

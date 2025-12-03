@@ -1,0 +1,60 @@
+﻿@page "/customers/details"
+@using Microsoft.EntityFrameworkCore
+@using carrentalmanagement.Domain
+@inject IDbContextFactory<carrentalmanagement.Data.carrentalmanagementContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Customers</h2>
+    <hr />
+    @if (customers is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">DrivingLicense</dt>
+            <dd class="col-sm-10">@customers.DrivingLicense</dd>
+            <dt class="col-sm-2">Address</dt>
+            <dd class="col-sm-10">@customers.Address</dd>
+            <dt class="col-sm-2">ContactNumber</dt>
+            <dd class="col-sm-10">@customers.ContactNumber</dd>
+            <dt class="col-sm-2">EmailAddress</dt>
+            <dd class="col-sm-10">@customers.EmailAddress</dd>
+            <dt class="col-sm-2">DateCreated</dt>
+            <dd class="col-sm-10">@customers.DateCreated</dd>
+            <dt class="col-sm-2">DateUpdated</dt>
+            <dd class="col-sm-10">@customers.DateUpdated</dd>
+            <dt class="col-sm-2">CreatedBy</dt>
+            <dd class="col-sm-10">@customers.CreatedBy</dd>
+            <dt class="col-sm-2">UpdatedBy</dt>
+            <dd class="col-sm-10">@customers.UpdatedBy</dd>
+        </dl>
+        <div>
+            <a href="@($"/customers/edit?id={customers.Id}")">Edit</a> |
+            <a href="@($"/customers")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Customers? customers;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        customers = await context.Customers.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (customers is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}
